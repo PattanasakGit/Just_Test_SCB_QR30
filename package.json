@@ -1,8 +1,8 @@
 {
-  "name": "just-test-scb",
+  "name": "just_Test_SCB_QR30",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@gitlab.nipa.cloud:pattanasak_a/just-test-scb.git",
+  "repository": "github.com/PattanasakGit/Just_Test_SCB_QR30.git",
   "author": "Just Pattanasak <pattanasak@nipa.cloud>",
   "license": "MIT",
   "dependencies": {
@@ -15,6 +15,10 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "dev": "tsc -w"
+    "dev": "tsc -w",
+    "build": "babel src --config-file .babelrc -d lib"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
   }
 }
