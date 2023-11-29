@@ -79,10 +79,15 @@ app.post("/generate-qrcode", async (req, res) => {
 
 //----------------------------------------เพื่อรับ respont เมื่อกาชำระเงินเสร็จสิ้น-----------------------------------------------
 
-app.post("/payment-notification", async (req, res) => {
+app.post("/PaymentConfirmation", async (req, res) => {
   const paymentData = req.body;
   console.log("Payment notification received:", paymentData);
-  res.status(200).send("Payment notification received");
+  res.status(200).json({
+    resCode: "00",
+    resDesc: "success",
+    transactionId: "xxx",
+    confirmId: "xxx",
+  });
 });
 
 //----------------------------------------------------------------------------------------------------------------------
