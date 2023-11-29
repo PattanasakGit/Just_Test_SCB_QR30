@@ -87,6 +87,66 @@ app.post("/payment-notification", async (req, res) => {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------------
+app.post("/check-transaction", async (req, res) => {
+  const {
+    billerId,
+    reference1,
+    reference2,
+    transactionDate,
+    eventCode,
+    partnerTransactionId,
+    amount,
+  } = req.body;
+  const authCode = req.query.authCode;
+  // const accessToken = req.query.accessToken; // Get the access token from the request
+
+  try {
+    const accessTokenResponse = await axios.post(
+      "https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token",
+      {
+        applicationKey: api_key,
+        applicationSecret: secret_api_key,
+        authCode,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "accept-language": "EN",
+          requestUId: "1b01dff2-b3a3-4567-adde-cd9dd73c8b6d",
+          resourceOwnerId: api_key,
+        },
+      }
+    );
+    const accessToken = accessTokenResponse.data.data.accessToken;
+
+    const response = await axios.get(
+      `https://api-sandbox.scb.co.th/partners/sandbox/v1/payment/billpayment/inquiry?eventCode=${eventCode}&billerId=${billerId}&reference1=${reference1}&reference2=${reference2}&transactionDate=${transactionDate}&partnerTransactionId=${partnerTransactionId}&amount=${amount}`,
+      {
+        headers: {
+          "Accept-Language": "EN",
+          "Content-Type": "application/json",
+          authorization: `Bearer ${accessToken}`,
+          requestUId: "871872a7-ed08-4229-a637-bb7c733305db",
+          resourceOwnerId: api_key,
+        },
+      }
+    );
+    const transactionData = response.data.data;
+
+    res.status(200).json({ transactionData });
+  } catch (error: any) {
+    console.error("Error checking transaction:", error);
+    if (error.response) {
+      console.error("Response status:", error.response.status);
+      console.error("Response data:", error.response.data);
+    }
+    res.send(error);
+  }
+});
+
+//----------------------------------------------------------------------------------------------------------------------
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

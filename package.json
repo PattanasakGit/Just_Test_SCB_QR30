@@ -14,9 +14,9 @@
     "typescript": "^5.3.2"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "tsc -w",
-    "build": "babel src --config-file .babelrc -d lib"
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "dev": "yarn build && yarn start"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"
