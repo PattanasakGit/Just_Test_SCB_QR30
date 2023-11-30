@@ -89,11 +89,16 @@ app.post("/PaymentConfirmation", async (req, res) => {
     confirmId: "xxx",
   });
 });
-
 //----------------------------------------------------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
-app.post("/check-transaction", async (req, res) => {
+//---------------------------------------   inquiry  Check data --------------------------------------------------------
+
+app.get("/check-transaction", async (req, res) => {
+  const authCode = req.query.authCode;
+
+  const url =
+    "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/inquiry";
+
   const {
     billerId,
     reference1,
@@ -102,9 +107,7 @@ app.post("/check-transaction", async (req, res) => {
     eventCode,
     partnerTransactionId,
     amount,
-  } = req.body;
-  const authCode = req.query.authCode;
-  // const accessToken = req.query.accessToken; // Get the access token from the request
+  } = req.query;
 
   try {
     const accessTokenResponse = await axios.post(
@@ -123,33 +126,37 @@ app.post("/check-transaction", async (req, res) => {
         },
       }
     );
+
     const accessToken = accessTokenResponse.data.data.accessToken;
 
-    const response = await axios.get(
-      `https://api-sandbox.scb.co.th/partners/sandbox/v1/payment/billpayment/inquiry?eventCode=${eventCode}&billerId=${billerId}&reference1=${reference1}&reference2=${reference2}&transactionDate=${transactionDate}&partnerTransactionId=${partnerTransactionId}&amount=${amount}`,
-      {
-        headers: {
-          "Accept-Language": "EN",
-          "Content-Type": "application/json",
-          authorization: `Bearer ${accessToken}`,
-          requestUId: "871872a7-ed08-4229-a637-bb7c733305db",
-          resourceOwnerId: api_key,
-        },
-      }
-    );
-    const transactionData = response.data.data;
+    const headers = {
+      authorization: `Bearer ${accessToken}`,
+      requestUID: "a105508e-63fb-4890-a4a5-2278ed1009a0",
+      resourceOwnerID: "L78C4D65AB053A428AAA1BD6BEDA9D2575",
+      "accept-language": "EN",
+    };
 
-    res.status(200).json({ transactionData });
+    const apiUrl =
+      `${url}?eventCode=${eventCode}&billerId=${billerId}&reference1=${reference1}&transactionDate=${transactionDate}` +
+      (reference2 ? `&reference2=${reference2}` : "") +
+      (partnerTransactionId
+        ? `&partnerTransactionId=${partnerTransactionId}`
+        : "") +
+      (amount ? `&amount=${amount}` : "");
+
+    const response = await axios.get(apiUrl, { headers });
+
+    console.log(response.data);
+    res.status(200).json(response.data);
   } catch (error: any) {
-    console.error("Error checking transaction:", error);
+    console.error("Error:", error);
     if (error.response) {
       console.error("Response status:", error.response.status);
       console.error("Response data:", error.response.data);
+      res.status(500).json(error.response.data);
     }
-    res.send(error);
   }
 });
-
 //----------------------------------------------------------------------------------------------------------------------
 
 app.listen(PORT, () => {
