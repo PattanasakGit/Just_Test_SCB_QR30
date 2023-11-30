@@ -1,16 +1,19 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
+import * as uuid from "uuid";
 
 dotenv.config();
 
 export class SCBAdapter {
   private api_key: string;
   private secret_api_key: string;
+  private U_ID: string;
 
   constructor() {
     this.api_key = process.env.API_KEY || "";
     this.secret_api_key = process.env.API_SECRET || "";
+    this.U_ID = uuid.v4();
   }
 
   async generateQRCode(req: Request, res: Response) {
@@ -34,7 +37,7 @@ export class SCBAdapter {
         this.getRequestConfig(accessToken)
       );
 
-      const qrCodeData = qrCodeDataResponse.data.data;
+      //   const qrCodeData = qrCodeDataResponse.data.data;
       const qrCodeImg = qrCodeDataResponse.data.data.qrImage;
 
       res.status(200).send(qrCodeImg);
@@ -77,8 +80,8 @@ export class SCBAdapter {
 
       const headers = {
         authorization: `Bearer ${accessToken}`,
-        requestUID: "a105508e-63fb-4890-a4a5-2278ed1009a0",
-        resourceOwnerID: "L78C4D65AB053A428AAA1BD6BEDA9D2575",
+        requestUID: this.U_ID,
+        resourceOwnerID: this.api_key,
         "accept-language": "EN",
       };
 
@@ -111,7 +114,7 @@ export class SCBAdapter {
         headers: {
           "Content-Type": "application/json",
           "accept-language": "EN",
-          requestUId: "1b01dff2-b3a3-4567-adde-cd9dd73c8b6d",
+          requestUId: this.U_ID,
           resourceOwnerId: this.api_key,
         },
       }
@@ -126,7 +129,7 @@ export class SCBAdapter {
         "Content-Type": "application/json",
         "accept-language": "EN",
         authorization: `Bearer ${accessToken}`,
-        requestUId: "85230887-e643-4fa4-84b2-4e56709c4ac4",
+        requestUId: this.U_ID,
         resourceOwnerId: this.api_key,
       },
     };
