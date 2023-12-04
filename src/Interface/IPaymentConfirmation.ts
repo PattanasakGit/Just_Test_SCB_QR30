@@ -1,14 +1,4 @@
-import { Request, Response } from "express";
-
-export interface IPaymentConfirmationRequest extends Request {
-  body: IPaymentConfirmation;
-}
-
-export interface IPaymentConfirmationResponse extends Response {
-  statusWithJson: (statusCode: number, payload: any) => void;
-}
-
-interface IPaymentConfirmation {
+export interface IPaymentConfirmation {
   payeeProxyId: string;
   payeeProxyType: string;
   payeeAccountNumber: string;
