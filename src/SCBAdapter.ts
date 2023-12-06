@@ -46,10 +46,7 @@ export class SCBAdapter {
 
       const qrCodeData = qrCodeDataResponse.data.data;
       console.log("Generate QR-Code success ✅ ");
-      return {
-        statusCode: 200,
-        data: qrCodeData,
-      };
+      return this.handleResponse(qrCodeData);
     } catch (error: any) {
       return this.handleError(error);
     }
@@ -57,15 +54,12 @@ export class SCBAdapter {
 
   async paymentConfirmation(paymentData: IPaymentConfirmation) {
     console.log("Payment notification received:", paymentData);
-    return {
-      statusCode: 200,
-      data: {
-        resCode: "00",
-        resDesc: "success",
-        transactionId: paymentData.transactionId,
-        confirmId: paymentData.transactionId, //Optional
-      },
-    };
+    return this.handleResponse({
+      resCode: "00",
+      resDesc: "success",
+      transactionId: paymentData.transactionId,
+      confirmId: paymentData.transactionId, //Optional
+    });
   }
 
   async Inquiry(uuid: string, authCode: unknown, data_params_input: IInquiry) {
@@ -98,10 +92,7 @@ export class SCBAdapter {
       }
       const apiUrl = `${url}?${params.toString()}`;
       const response = await axios.get(apiUrl, { headers });
-      return {
-        statusCode: 200,
-        data: response.data,
-      };
+      return this.handleResponse(response.data);
     } catch (error: any) {
       return this.handleError(error);
     }
@@ -134,6 +125,16 @@ export class SCBAdapter {
     return {
       statusCode: error.response.status,
       data: error.response.data.status,
+    };
+  }
+
+  private handleResponse(data_input: unknown): {
+    statusCode: number;
+    data: unknown;
+  } {
+    return {
+      statusCode: 200,
+      data: data_input,
     };
   }
 }
