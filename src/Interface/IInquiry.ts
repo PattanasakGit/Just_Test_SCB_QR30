@@ -5,4 +5,5 @@ export interface IInquiry {
   reference1: string;
   reference2?: string;
   amount?: string; // Optional (Decimal, 15,2)
+  // [key: string]: string | undefined;
 }

@@ -22,7 +22,7 @@ export class SCBAdapter {
     };
   }
 
-  async generateQRCode(uuid: string, authCode: unknown, data: IBodyGenQR) {
+  async generateQRCode(uuid: string, data: IBodyGenQR) {
     try {
       const body: IBodyGenQR = {
         qrType: data.qrType,
@@ -35,7 +35,7 @@ export class SCBAdapter {
       };
       const headers = {
         ...this.headers_const,
-        authorization: `Bearer ${await this.getAccessToken(uuid, authCode)}`,
+        authorization: `Bearer ${await this.getAccessToken(uuid)}`,
         requestUId: uuid,
       };
       const qrCodeDataResponse = await axios.post(
@@ -62,34 +62,21 @@ export class SCBAdapter {
     });
   }
 
-  async Inquiry(uuid: string, authCode: unknown, data_params_input: IInquiry) {
+  async Inquiry(uuid: string, data_params_input: IInquiry) {
     const url = this.URL + "/payment/billpayment/inquiry";
     try {
       const headers = {
         ...this.headers_const,
-        authorization: `Bearer ${await this.getAccessToken(uuid, authCode)}`,
+        authorization: `Bearer ${await this.getAccessToken(uuid)}`,
         requestUID: uuid,
       };
-
       const params = new URLSearchParams();
-      if (data_params_input.eventCode) {
-        params.append("eventCode", data_params_input.eventCode);
-      }
-      if (data_params_input.billerId) {
-        params.append("billerId", data_params_input.billerId);
-      }
-      if (data_params_input.reference1) {
-        params.append("reference1", data_params_input.reference1);
-      }
-      if (data_params_input.transactionDate) {
-        params.append("transactionDate", data_params_input.transactionDate);
-      }
-      if (data_params_input.reference2) {
-        params.append("reference2", data_params_input.reference2);
-      }
-      if (data_params_input.amount) {
-        params.append("amount", data_params_input.amount);
-      }
+      Object.entries(data_params_input).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.append(key, value);
+        }
+      });
+
       const apiUrl = `${url}?${params.toString()}`;
       const response = await axios.get(apiUrl, { headers });
       return this.handleResponse(response.data);
@@ -98,14 +85,10 @@ export class SCBAdapter {
     }
   }
 
-  private async getAccessToken(
-    uuid: string,
-    authCode: unknown
-  ): Promise<string> {
+  private async getAccessToken(uuid: string): Promise<string> {
     const body = {
       applicationKey: this.api_key,
       applicationSecret: this.secret_api_key,
-      authCode,
     };
     const headers = {
       ...this.headers_const,

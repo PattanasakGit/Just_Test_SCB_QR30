@@ -12,9 +12,8 @@ const scbAdapter = new SCBAdapter();
 app.use(express.json());
 
 app.post("/generate-qrcode", async (req, res: any) => {
-  const authCode = req.query.authCode;
   const data: IBodyGenQR = req.body;
-  const result = await scbAdapter.generateQRCode(uuid.v4(), authCode, data);
+  const result = await scbAdapter.generateQRCode(uuid.v4(), data);
   res.status(result.statusCode).json(result.data);
 });
 
@@ -25,7 +24,7 @@ app.post("/PaymentConfirmation", async (req, res) => {
 });
 
 app.get("/Inquiry", async (req, res) => {
-  const authCode = req.query.authCode;
+  // const authCode = req.query.authCode;
   const {
     eventCode,
     billerId,
@@ -42,7 +41,7 @@ app.get("/Inquiry", async (req, res) => {
     transactionDate: transactionDate as string,
     amount: amount as string | undefined,
   };
-  const result = await scbAdapter.Inquiry(uuid.v4(), authCode, params);
+  const result = await scbAdapter.Inquiry(uuid.v4(), params);
   res.status(result.statusCode).json(result.data);
 });
 
